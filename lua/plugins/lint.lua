@@ -10,11 +10,11 @@ return {
       bash = { 'shellcheck' }
     }
 
-    vim.api.nvim_create_autocmd('BufWritePost', {
-      callback = function()
-        lint.try_lint()
-      end,
-      pattern = '*'
-    })
+    -- vim.api.nvim_create_autocmd('BufWritePost', {
+    --   callback = function()
+    --     -- lint.try_lint()
+    --   end,
+    --   pattern = '*'
+    -- })
   end
 }
