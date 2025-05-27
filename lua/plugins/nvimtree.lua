@@ -24,6 +24,9 @@ return {
       view                = {
         width = 30,
         side = 'left'
+      },
+      git = {
+        ignore = false,
       }
     }
 
