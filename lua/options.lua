@@ -70,6 +70,14 @@ vim.cmd([[
 
 vim.lsp.set_log_level("WARN")
 
+-- Strip trailing whitespace on save
+vim.cmd([[
+  augroup StripTrailingWhitespace
+    autocmd!
+    autocmd BufWritePre * :%s/\s\+$//e
+  augroup END
+]])
+
 -- Ensure no autocommands are reloading the config
 vim.cmd([[
   augroup LazyConfigReload
