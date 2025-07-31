@@ -1,35 +1,45 @@
 return {
   {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "ruby_lsp" },
-      })
-    end,
-  },
-  {
     "neovim/nvim-lspconfig",
+    dependencies = {
+      "folke/lazydev.nvim",
+      ft = "lua", -- only load on lua files
+      opts = {
+        library = {
+          -- See the configuration section for more details
+          -- Load luvit types when the `vim.uv` word is found
+          { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        },
+      },
+    },
     config = function()
-      local lspconfig = require('lspconfig')
-
-      -- Lua LSP
-      lspconfig.lua_ls.setup({})
-
-      -- Ruby LSP
-      lspconfig.ruby_lsp.setup({
-        cmd = { "env", "RAILS_ENV=test", "ruby-lsp" }
+      require("lspconfig").lua_ls.setup {}
+      require("lspconfig").ruby_lsp.setup({
+        cmd = { vim.fn.expand("~/.rbenv/shims/ruby-lsp") },
+        cmd_env = {
+          RAILS_ENV = "test",
+          RUBY_LSP_LOG_LEVEL = "debug"
+        },
+        init_options = {
+          formatter = 'standard',
+          linters = { 'standard' },
+          addonSettings = {
+            ["Ruby LSP Rails"] = {
+              enablePendingMigrationsPrompt = false,
+            }
+          }
+        },
+        on_attach = function(client, bufnr)
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Go to definition' })
+        end,
       })
 
-      -- Keymaps
-      vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
-      vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, {})
-      vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+      require("lspconfig").sorbet.setup({
+        cmd = { "srb", "tc", "--lsp" },
+        on_attach = function(client, bufnr)
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr, desc = 'Go to definition' })
+        end,
+      })
     end,
-  },
+  }
 }
